@@ -1,0 +1,150 @@
+use EscolaDB;
+
+--questão 1
+SELECT * FROM Alunos 
+WHERE idade = (SELECT MAX(idade) FROM Alunos);
+
+
+--questão 2
+SELECT * FROM Alunos 
+WHERE idade < (SELECT AVG(idade) FROM Alunos);
+
+
+--questão 3
+
+SELECT * FROM Cursos
+WHERE carga_horaria
+a > (SELECT MAX(carga_horaria) from Alunos); 
+
+
+--questão 4
+SELECT a.*, m.nota 
+FROM Alunos a
+JOIN Matriculas m ON a.id_aluno = m.id_aluno
+WHERE m.nota = (SELECT MAX(nota) FROM Matriculas);
+
+
+--questão 5
+SELECT * FROM Alunos
+where Alunos < (SELECT AVG(nota) from Alunos);
+
+
+--questão 6
+SELECT * from Cursos
+WHERE carga_horaria > (SELECT AVG(carga_horaria) from Cursos);
+
+
+--questão 7
+SELECT * FROM Alunos 
+WHERE idade = (SELECT MIN(idade) FROM Alunos);
+
+--questão 8
+SELECT * FROM Matriculas 
+WHERE faltas > (SELECT AVG(faltas) FROM Matriculas);
+
+--questão 9
+SELECT * from Cursos
+where carga_horaria <> (SELECT MAX(carga_horaria) Cursos);
+
+
+--quetão 10
+SELECT a.*, m.nota 
+FROM Alunos a
+JOIN Matriculas m ON a.id_aluno = m.id_aluno
+WHERE m.nota = (SELECT MIN(nota) FROM Matriculas);
+
+
+-- Questões Intermediarias com o IN
+
+-- questão 01
+SELECT nome
+FROM Alunos 
+WHERE id_aluno IN (SELECT id_aluno FROM Matriculas);
+
+-- questão 02
+SELECT nome_curso 
+FROM Cursos 
+WHERE id_curso IN (SELECT id_curso FROM Matriculas);
+
+-- questão 3 
+SELECT * FROM Alunos 
+WHERE id_aluno IN (
+    SELECT id_aluno 
+    FROM Matriculas 
+    WHERE id_curso IN (SELECT id_curso FROM Cursos WHERE nome_curso = 'Python')
+); 
+  
+--questão 4
+
+SELECT * 
+FROM Alunos 
+WHERE id_aluno IN (
+    SELECT id_aluno 
+    FROM Matriculas 
+    WHERE id_curso IN (SELECT id_curso FROM Cursos WHERE carga_horaria > 60)
+);
+
+
+-- questão 5
+SELECT nome_curso FROM Cursos 
+WHERE id_curso IN (SELECT id_curso FROM Matriculas WHERE nota > 8
+);
+
+-- questão 6
+SELECT * FROM Alunos 
+WHERE id_aluno IN (SELECT id_aluno FROM Matriculas GROUP BY id_aluno HAVING COUNT(id_matricula));
+
+ 
+-- questão 7
+SELECT nome
+FROM Alunos 
+WHERE id_aluno not IN (SELECT id_aluno FROM Matriculas);
+
+
+-- questão 8
+SELECT * FROM Alunos 
+WHERE id_aluno IN (SELECT id_aluno FROM Matriculas WHERE faltas > 5);
+
+-- questão 9
+SELECT nome_curso FROM Cursos 
+WHERE id_curso IN (SELECT id_curso FROM Matriculas 
+WHERE id_aluno IN (SELECT id_aluno FROM Alunos WHERE cidade = 'Curitiba'));
+
+-- questão 10
+SELECT * FROM Alunos 
+WHERE id_aluno IN (SELECT id_aluno FROM Matriculas WHERE id_curso IN (SELECT id_curso 
+FROM Cursos 
+WHERE carga_horaria = (SELECT MAX(carga_horaria) FROM Cursos)));
+
+-- questões avançadas (operadores comparação)
+
+-- questão 1
+SELECT * FROM Alunos 
+WHERE idade > (SELECT AVG(idade) FROM Alunos WHERE cidade = 'São Paulo');
+
+--questão 2
+SELECT Cursos, AVG(nota) AS media_cursonota
+FROM Matriculas 
+GROUP BY Cursos 
+HAVING AVG(nota) > (SELECT AVG(nota) FROM Matriculas);
+
+
+--questão 3
+SELECT id_aluno, SUM(faltas) AS total_faltas
+FROM Matriculas
+GROUP BY id_aluno
+HAVING SUM(faltas) > (
+SELECT AVG(faltas) FROM Matriculas);
+
+
+--questão 4
+SELECT id_curso 
+FROM Matriculas 
+GROUP BY id_curso 
+HAVING MAX(nota) = (SELECT MAX(nota) FROM Matriculas);
+
+--questão 5
+SELECT id_aluno, AVG(nota) AS media_aluno
+FROM Matriculas
+GROUP BY id_aluno
+HAVING AVG(nota) < (SELECT AVG(nota) FROM Matriculas);
